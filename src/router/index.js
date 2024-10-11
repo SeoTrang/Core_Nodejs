@@ -12,7 +12,7 @@ router.post('/:table', async (req, res) => {
     res.status(201).json({ message: 'Thêm thành công!', id });
   } catch (error) {
     console.error('Error inserting data:', error);
-    res.status(500).json({ error: 'Không thể thêm dữ liệu' });
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -28,17 +28,32 @@ router.get('/:table', async (req, res) => {
   }
 });
 
+// router.get('/:table/:id', async (req, res) => {
+//     try {
+//         const { id } = req.params; // L
+//       const { table } = req.params; // Lấy tên bảng từ URL
+//       const records = await db(table).select('*').where('id',id); // Truy vấn tất cả bản ghi từ bảng tương ứng
+//       res.status(200).json(records);
+//     } catch (error) {
+//       console.error('Error fetching data:', error);
+//       res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+//     }
+//   });
+
 router.get('/:table/:id', async (req, res) => {
     try {
-        const { id } = req.params; // L
-      const { table } = req.params; // Lấy tên bảng từ URL
-      const records = await db(table).select('*').where('id',id); // Truy vấn tất cả bản ghi từ bảng tương ứng
-      res.status(200).json(records);
+        const { id } = req.params; // Lấy id từ URL
+        const { table } = req.params; // Lấy tên bảng từ URL
+        const records = await db(table)
+            .select( '*') // Chỉ lấy cột 'id' và 'name'
+            .where('id', id); // Lọc theo id
+        res.status(200).json(records);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+        console.error('Error fetching data:', error);
+        res.status(500).json({ error: error.message });
     }
-  });
+});
+
 
 // Cập nhật một bản ghi trong bảng bất kỳ theo 'table' và 'id'
 router.put('/:table/:id', async (req, res) => {
